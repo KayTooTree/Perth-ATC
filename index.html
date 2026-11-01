@@ -399,7 +399,7 @@ return out.map(r=>({t:r.t,p:rdp(r.c.map(i=>[i%GW,(i/GW)|0]),.9).map(q=>[+((q[0]+
 
 
 /* ---- main menu ---- */
-const ROLES=[{k:'ATC',t:'ATC',d:'Radar · Ground · Flights'},{k:'CREW',t:'Ground Crew',d:'Crew · Crew Map · Flights'},{k:'PILOT',t:'Pilot',d:'Coming soon',ph:1},{k:'SUP',t:'Supervisor',d:'All tabs · Supervisor · Log'},{k:'PAX',t:'Passenger',d:'Coming soon',ph:1}];
+const ROLES=[{k:'ATC',t:'ATC',d:'Radar · Ground · Flights'},{k:'CREW',t:'Ground Crew',d:'Crew · Crew Map · Flights'},{k:'PILOT',t:'Pilot',d:'Coming soon',ph:1},{k:'SUP',t:'Supervisor',d:'All tabs · Supervisor · Log'},{k:'PAX',t:'Passenger',d:'Coming soon',ph:1},{k:'XMAS',t:'Christmas',d:'Ho ho ho'}];
 const AIRPORTS=[{id:'IPPH',n:'Perth International',c:'Perth, Australia',pre:'perth'}];
 const TABSET={ATC:['R','G','F'],CREW:['C','M','F'],SUP:['R','G','C','M','F','S','L']},RLN={ATC:'ATC',CREW:'Ground Crew',SUP:'Supervisor'};
 let ROLE='',AIRPORT='';const mm={step:1,role:'',ap:null,code:''};
@@ -408,25 +408,25 @@ function applyTabs(){['R','G','C','M','F','S','L'].forEach(k=>$('#t'+k).classLis
 const rollCode=()=>(mm.ap?mm.ap.pre:'perth')+'-'+Math.random().toString(36).slice(2,8)+Math.random().toString(36).slice(2,6);
 function mmShow(step){mm.step=step;document.body.classList.add('mmo');$('#mm').classList.remove('hid');const g=$('#mmg'),se=$('#mmse');g.classList.toggle('hid',step===3);se.classList.toggle('hid',step!==3);$('#mmback').classList.toggle('hid',step===1);
 document.querySelectorAll('#mm .mmsteps li').forEach(li=>{li.classList.toggle('on',+li.dataset.s===step);li.classList.toggle('done',+li.dataset.s<step)});
-const row=(o,i)=>`<button class="mmrow${o.ph?' off':''}" data-k="${esc(o.k)}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${esc(o.t)}</span><span class="d">${esc(o.d)}</span>${o.ph?'<span class="stx">in Entwicklung</span>':''}</button>`;
+const row=(o,i)=>`<button class="mmrow${o.ph?' off':''}" data-k="${esc(o.k)}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${esc(o.t)}</span><span class="d">${esc(o.d)}</span>${o.ph?'<span class="stx">in development</span>':''}</button>`;
 if(step===1){$('#mmh').textContent='Choose a role';$('#mms').textContent='What will you do in this session?';g.innerHTML=ROLES.map(row).join('')}
-else if(step===2){$('#mmh').textContent='Choose an airport';$('#mms').textContent=RLN[mm.role];g.innerHTML=AIRPORTS.map((a,i)=>row({k:a.id,t:a.id,d:a.n+', '+a.c},i)).join('')+row({k:'-',t:'Weitere',d:'Coming soon',ph:1},AIRPORTS.length)}
+else if(step===2){$('#mmh').textContent='Choose an airport';$('#mms').textContent=RLN[mm.role];g.innerHTML=AIRPORTS.map((a,i)=>row({k:a.id,t:a.id,d:a.n+', '+a.c},i)).join('')+row({k:'-',t:'More',d:'Coming soon',ph:1},AIRPORTS.length)}
 else{let m={};try{m=JSON.parse(localStorage.getItem('ipph2me')||'{}')}catch(e){}const h=(location.hash.match(/room=([\w-]+)/)||[])[1]||'';if(!mm.code)mm.code=rollCode();
-$('#mmh').textContent='Session';$('#mms').textContent=RLN[mm.role]+' am '+mm.ap.id;
+$('#mmh').textContent='Session';$('#mms').textContent=RLN[mm.role]+' at '+mm.ap.id;
 se.innerHTML=`<div class="mmf1"><div><label>Name</label><input id="mmn" value="${esc(m.n||'')}" autocomplete="off"></div>${mm.role==='ATC'?`<div><label>Position</label><select id="mmp">${['TWR','GND','DEL','APP','DEP','ASM'].map(r=>`<option${(m.r||'TWR')===r?' selected':''}>${r}</option>`).join('')}</select></div>`:''}</div>
-<div class="mmcols"><section><h3>Session beitreten</h3><p>Den Code bekommst du von der Person, die die Session erstellt hat.</p><label>Room-Code</label><input id="mmj" value="${esc(h)}" placeholder="perth-xxxxxxxx" autocomplete="off"><button class="mmb1 pri" id="mmjb">Beitreten</button></section>
-<section><h3>Session erstellen</h3><p>Du bekommst einen Code, den du an die anderen weitergibst.</p><label>Room-Code</label><div class="rw"><input id="mmcr" value="${esc(mm.code)}" readonly><button class="mmb1" id="mmrr">Neu</button></div><button class="mmb1 pri" id="mmcb">Erstellen und starten</button><button class="mmb1" id="mmcl">Link kopieren</button></section></div>`}
-$('#mmc').innerHTML=step===3?'<a id="mmoff">Ohne Session starten (offline)</a>':''}
+<div class="mmcols"><section><h3>Join session</h3><p>You get the code from the person who created the session.</p><label>Room code</label><input id="mmj" value="${esc(h)}" placeholder="perth-xxxxxxxx" autocomplete="off"><button class="mmb1 pri" id="mmjb">Join</button></section>
+<section><h3>Create session</h3><p>You get a code to pass on to the others.</p><label>Room code</label><div class="rw"><input id="mmcr" value="${esc(mm.code)}" readonly><button class="mmb1" id="mmrr">New</button></div><button class="mmb1 pri" id="mmcb">Create and start</button><button class="mmb1" id="mmcl">Copy link</button></section></div>`}
+$('#mmc').innerHTML=step===3?'<a id="mmoff">Start without a session (offline)</a>':''}
 function enterApp(opts){const n=($('#mmn').value||'').trim()||'?',pos=mm.role==='ATC'?$('#mmp').value:mm.role==='CREW'?'CREW':'SUP';try{localStorage.setItem('ipph2me',JSON.stringify({n,r:pos}))}catch(e){}
 $('#ln').value=n;$('#lo').value=pos;
 const fin=()=>{ROLE=mm.role;AIRPORT=mm.ap.id;document.body.classList.remove('mmo');$('#mm').classList.add('hid');$('#who').textContent=RLN[ROLE]+' · '+AIRPORT+(ROLE==='ATC'?' · '+pos:'');applyTabs();tab(TABSET[ROLE][0]);ren()};
 if(opts.mode==='offline'){if(mq)leave();me={n,r:pos};fin();return}
-if(typeof mqtt==='undefined')return toast('MQTT-Bibliothek nicht geladen – offline starten?');
-const code=(opts.code||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');if(code.length<4)return toast('Room-Code: mindestens 4 Zeichen');
+if(typeof mqtt==='undefined')return toast('MQTT library not loaded – start offline?');
+const code=(opts.code||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');if(code.length<4)return toast('Room code: at least 4 characters');
 $('#lr').value=code;ROLE=mm.role;
 if(opts.mode==='create'){S.fl=[];S.rq=[];S.sel=null;S.gs=0;S.gsw='';$('#lu').checked=true}else $('#lu').checked=false;
 live();fin()}
-$('#mm').addEventListener('click',e=>{const c=e.target.closest('.mmrow');if(c){if(c.classList.contains('off'))return toast('Not available yet');if(mm.step===1){mm.role=c.dataset.k;mmShow(2)}else if(mm.step===2){mm.ap=AIRPORTS.find(a=>a.id===c.dataset.k);mm.code='';mmShow(3)}return}
+$('#mm').addEventListener('click',e=>{const c=e.target.closest('.mmrow');if(c){if(c.classList.contains('off'))return toast('Not available yet');if(c.dataset.k==='XMAS'){big('🎄 Christmas',['Shut up giggleshits.']);return}if(mm.step===1){mm.role=c.dataset.k;mmShow(2)}else if(mm.step===2){mm.ap=AIRPORTS.find(a=>a.id===c.dataset.k);mm.code='';mmShow(3)}return}
 const id=e.target.id;if(id==='mmjb')enterApp({mode:'join',code:$('#mmj').value});else if(id==='mmcb')enterApp({mode:'create',code:$('#mmcr').value});else if(id==='mmrr'){mm.code=rollCode();$('#mmcr').value=mm.code}else if(id==='mmcl')cp(location.href.split('#')[0]+'#room='+$('#mmcr').value);else if(id==='mmoff')enterApp({mode:'offline'})});
 $('#mmback').onclick=()=>mmShow(mm.step-1);
 $('#mmb').onclick=()=>{if(mq)leave();ROLE='';$('#who').textContent='';mmShow(1)};
